@@ -1,28 +1,52 @@
 <!doctype html>
 <html lang="ru"><meta charset="utf-8"><title>Проверки конструктора</title>
 <body><h1>Проверки конструктора</h1><pre id="result">Запуск…</pre>
-<script src="app.js"></script>
+<script src="app.js?v=3"></script>
 <script>
 const errors = [];
 function check(condition, message) { if (!condition) errors.push(message); }
-check(INDUSTRIES.length === 8, 'Должны быть все восемь направлений');
-check(INDUSTRIES.reduce((count, item) => count + item.companies.length, 0) === 23, 'Должны быть все 23 примера компаний');
+check(INDUSTRIES.length === 8, 'Должны быть восемь направлений');
+check(INDUSTRIES.reduce((n, item) => n + item.companies.length, 0) === 23, 'Должны быть 23 компании');
 for (const industry of INDUSTRIES) {
-  check(industry.evidence.length > 0, `Нет кейса: ${industry.id}`);
-  for (const id of industry.evidence) check(SOURCES[id] && CASE_TECH[id], `Нет описания источника: ${id}`);
-  const result = buildStack(industry.id);
-  check(result.items.length === 20, `Неполный стек: ${industry.id}`);
-  check(result.options.ml === true, `ML отключён: ${industry.id}`);
-  check(result.items.some(item => item.tech === 'MLflow'), `Нет ML-слоя: ${industry.id}`);
-  for (const item of result.items) {
-    check(item.status !== 'confirmed' || (industry.evidence.includes(item.source) && CASE_TECH[item.source][item.tech] === item.source), `Ложное подтверждение: ${industry.id} / ${item.tech}`);
+  for (const [companyId] of industry.companies) {
+    const result = buildStack(industry.id, companyId);
+    check(result.company[0] === companyId, `Неверная компания: ${companyId}`);
+    check(result.items.length === 20, `Неполный стек: ${companyId}`);
+    check(result.items.some(item => item.tech === 'MLflow'), `Нет ML: ${companyId}`);
+    for (const item of result.items) {
+      if (item.status === 'confirmed') check(result.direct && result.sources.includes(item.source), `Ложное подтверждение: ${companyId}/${item.tech}`);
+      if (item.status === 'analog') check(!result.direct && result.sources.includes(item.source), `Ложный аналог: ${companyId}/${item.tech}`);
+    }
   }
 }
-const development = buildStack('development');
-check(development.items.some(item => item.tech === 'MLflow' && item.source === 'samolet'), 'Не показан MLflow из публикации Самолёта');
-const services = buildStack('services');
-check(services.items.some(item => item.tech === 'ClickHouse' && item.source === 'tutu'), 'Не показан ClickHouse из публикации Туту');
-const output = document.getElementById('result');
-output.dataset.status = errors.length ? 'fail' : 'pass';
-output.textContent = errors.length ? `FAIL: ${errors.join('; ')}` : 'PASS: все сценарии и источники проверены';
+check(buildStack('development','samolet').items.some(item => item.tech === 'MLflow' && item.status === 'confirmed'), 'Не подтверждён MLflow Самолёта');
+check(buildStack('services','tutu').items.some(item => item.tech === 'MongoDB' && item.status === 'confirmed'), 'Не показан MongoDB Туту');
+check(buildStack('logistics','onlinetrade').items.some(item => item.status === 'analog'), 'Не обозначен отраслевой аналог');
+
+const frame = document.createElement('iframe');
+frame.src = 'index.html';
+frame.hidden = true;
+frame.onload = () => {
+  try {
+    const doc = frame.contentDocument;
+    const industrySelect = doc.getElementById('industry');
+    const companySelect = doc.getElementById('company');
+    for (const industry of INDUSTRIES) {
+      industrySelect.value = industry.id;
+      industrySelect.dispatchEvent(new Event('change', { bubbles: true }));
+      check(companySelect.options.length === industry.companies.length, `Список компаний: ${industry.id}`);
+      for (const [id, name] of industry.companies) {
+        companySelect.value = id;
+        companySelect.dispatchEvent(new Event('change', { bubbles: true }));
+        check(doc.querySelectorAll('.stack-card').length === 20, `Стек не отображается: ${id}`);
+        check(doc.getElementById('summary').textContent.includes(name), `Компания не выбрана: ${id}`);
+      }
+    }
+  } catch (error) { errors.push(`Ошибка интерфейса: ${error.message}`); }
+  const output = document.getElementById('result');
+  output.dataset.status = errors.length ? 'fail' : 'pass';
+  output.textContent = errors.length ? `FAIL: ${errors.join('; ')}` : 'PASS: 23 компании, переключение и источники';
+};
+frame.onerror = () => { const output = document.getElementById('result'); output.dataset.status = 'fail'; output.textContent = 'FAIL: index.html не загрузился'; };
+document.body.append(frame);
 </script></body></html>

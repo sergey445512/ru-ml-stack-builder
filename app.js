@@ -39,11 +39,11 @@ const CASE_TECH = {
   sportmaster: { 'Redis':'sportmaster', 'Kafka':'sportmaster', 'Kubernetes':'sportmaster', 'Docker':'sportmaster', 'GitLab':'sportmaster', 'Prometheus':'sportmaster', 'Grafana':'sportmaster' },
   detmir: { 'ClickHouse':'detmir', 'Spark / PySpark':'detmir', 'Airflow':'detmir', 'Kafka':'detmir', 'Superset':'detmir', 'Kubernetes':'detmir', 'Docker':'detmir' },
   lenta: { 'Kafka':'lenta', 'Grafana':'lenta' },
-  goldapple: { 'Redis':'goldapple', 'Kafka':'goldapple', 'Kubernetes':'goldapple', 'Docker':'goldapple', 'GitLab':'goldapple', 'Prometheus':'goldapple', 'Grafana':'goldapple' },
+  goldapple: { 'MongoDB':'goldapple', 'Redis':'goldapple', 'Kafka':'goldapple', 'Kubernetes':'goldapple', 'Docker':'goldapple', 'GitLab':'goldapple', 'Prometheus':'goldapple', 'Grafana':'goldapple' },
   dns: { 'PostgreSQL':'dns', 'Kafka':'dns' },
   mvideo: { 'PostgreSQL':'mvideo', 'Airflow':'mvideo' },
   mvideoData: { 'Greenplum':'mvideoData', 'ClickHouse':'mvideoData', 'Airflow':'mvideoData' },
-  tutu: { 'ClickHouse':'tutu', 'Kafka':'tutu' },
+  tutu: { 'MongoDB':'tutu', 'ClickHouse':'tutu', 'Kafka':'tutu' },
   ingos: {},
   nornickel: {},
   samolet: { 'ClickHouse':'samolet', 'MinIO':'samolet', 'Spark / PySpark':'samolet', 'Airflow':'samolet', 'Kafka':'samolet', 'MLflow':'samolet', 'GitLab':'samolet', 'Kubernetes':'samolet', 'Qdrant':'samolet' },
@@ -56,21 +56,31 @@ const CASE_TECH = {
   severstal: { 'Airflow':'severstal', 'Kafka':'severstal' }
 };
 
+const COMPANY_SOURCES = {
+  cdek:['cdek'], nornickel:['nornickel'], sportmaster:['sportmaster'],
+  detmir:['detmir'], lenta:['lenta'], goldapple:['goldapple'], dns:['dns'],
+  mvideo:['mvideo','mvideoData'], domclick:['domclick','domclickK8s'],
+  tutu:['tutu'], ingos:['ingos'], samolet:['samolet'], rzd:['rzd']
+};
+
 function industryById(id) { return INDUSTRIES.find(item => item.id === id) || INDUSTRIES[0]; }
 
-function buildStack(industryId) {
+function buildStack(industryId, companyId) {
   const industry = industryById(industryId);
+  const company = industry.companies.find(([id]) => id === companyId) || industry.companies[0];
+  const direct = Boolean(COMPANY_SOURCES[company[0]]);
+  const sources = direct ? COMPANY_SOURCES[company[0]] : industry.analog === 'domclick' ? ['domclick','domclickK8s'] : [industry.analog];
   const o = { ...industry.defaults, ml: true };
   const large = o.scale === 'large';
   const busy = o.scale !== 'small';
-  const evidence = Object.assign({}, ...industry.evidence.slice().reverse().map(id => CASE_TECH[id] || {}));
+  const evidence = Object.assign({}, ...sources.slice().reverse().map(id => CASE_TECH[id] || {}));
   const items = [];
   function add(layer, tech, why) {
     const source = evidence[tech] || null;
-    items.push({ layer, tech, why, status: tech === 'Пока не требуется' ? 'deferred' : source ? 'confirmed' : 'proposed', source });
+    items.push({ layer, tech, why, status: tech === 'Пока не требуется' ? 'deferred' : source ? (direct ? 'confirmed' : 'analog') : 'proposed', source });
   }
-  add('Операционная БД', 'PostgreSQL', 'Транзакции, заказы и сущности приложения; аналитическую нагрузку лучше отделять.');
-  add('Аналитическая БД / DWH', o.analytics ? (['logistics','transport'].includes(industry.id) ? 'Greenplum' : 'ClickHouse') : 'Пока не требуется', o.analytics ? 'Отдельный контур для тяжёлых выборок и отчётов.' : 'Пока отчёты невелики, отдельное хранилище добавит лишнюю сложность.');
+  add('Операционная БД', ['goldapple','tutu'].includes(company[0]) ? 'MongoDB' : 'PostgreSQL', 'Транзакции, заказы и сущности приложения; аналитическую нагрузку лучше отделять.');
+  add('Аналитическая БД / DWH', o.analytics ? (['cdek','domclick','rzd'].includes(company[0]) ? 'Greenplum' : 'ClickHouse') : 'Пока не требуется', o.analytics ? 'Отдельный контур для тяжёлых выборок и отчётов.' : 'Пока отчёты невелики, отдельное хранилище добавит лишнюю сложность.');
   add('Файлы и датасеты', o.infra === 'onprem' ? 'MinIO' : 'S3', 'Объектное хранение файлов, выгрузок и артефактов; конкретный провайдер зависит от инфраструктуры.');
   add('Обработка на одной машине', 'Python + SQL', 'Понятный старт для загрузок и расчётов, пока объём помещается на одном узле.');
   add('Распределённая обработка', large && o.analytics ? 'Spark / PySpark' : 'Пока не требуется', large && o.analytics ? 'Рассматривать для вычислений, которые уже не помещаются на одном узле; не обязателен только из-за размера компании.' : 'SQL и Python покрывают выбранный сценарий без отдельного кластера.');
@@ -90,13 +100,13 @@ function buildStack(industryId) {
   add('Качество модели и дрейф', o.ml ? 'Evidently' : 'Пока не требуется', o.ml ? 'Шаблон для проверки изменений данных и качества после внедрения; требует подходящих меток и правил.' : 'Мониторинг модели нужен после появления ML-продукта.');
   add('Векторный поиск', o.vector ? (large ? 'Qdrant' : 'pgvector') : 'Пока не требуется', o.vector ? 'Нужен только если продукт действительно ищет похожие объекты или эмбеддинги.' : 'Обычная реляционная БД покрывает текущие запросы.');
   add('Брокер событий', o.events ? (busy ? 'Kafka' : 'RabbitMQ') : 'Пока не требуется', o.events ? 'Развязывает отправителей и потребителей событий; Kafka уместна при потоках и нескольких потребителях.' : 'Если асинхронного обмена нет, брокер не нужен.');
-  return { industry, options: o, items, sources: industry.evidence };
+  return { industry, company, direct, options: o, items, sources };
 }
 
 function exportText(result) {
-  const lines = [`Направление: ${result.industry.name}`, `Примеры компаний: ${result.industry.companies.map(([, name]) => name).join(', ')}`, 'Это учебный сценарий с ML, не карта инфраструктуры перечисленных компаний.', ''];
+  const lines = [`Направление: ${result.industry.name}`, `Компания: ${result.company[1]}`, 'Это учебный сценарий с ML, не полная карта инфраструктуры компании.', ''];
   for (const item of result.items) {
-    const tag = item.status === 'confirmed' ? 'публично упомянуто' : item.status === 'deferred' ? 'не требуется сейчас' : 'гипотеза';
+    const tag = item.status === 'confirmed' ? 'публично упомянуто для выбранной компании' : item.status === 'analog' ? 'отраслевой аналог' : item.status === 'deferred' ? 'не требуется сейчас' : 'гипотеза';
     lines.push(`${item.layer}: ${item.tech} [${tag}] — ${item.why}${item.source ? ` Источник: ${SOURCES[item.source].url}` : ''}`);
   }
   return lines.join('\n');
@@ -107,49 +117,62 @@ if (typeof module !== 'undefined' && module.exports) module.exports = { SOURCES,
 if (typeof document !== 'undefined' && document.getElementById('industry')) {
   const $ = id => document.getElementById(id);
   const industrySelect = $('industry');
+  const companySelect = $('company');
   for (const industry of INDUSTRIES) industrySelect.add(new Option(industry.name, industry.id));
+
+  function fillCompanies() {
+    const industry = industryById(industrySelect.value);
+    companySelect.replaceChildren();
+    for (const [id, name] of industry.companies) companySelect.add(new Option(name, id));
+  }
+
   function renderSources(result) {
     const list = $('sources-list');
     list.replaceChildren();
+    $('sources-context').textContent = result.direct ? `${result.company[1]} · публикации о конкретных системах` : `${result.company[1]} · источников об инструментах компании пока нет; показан отраслевой аналог`;
     for (const id of result.sources) {
-      const named = result.industry.companies.some(([company]) => company === id) || id === 'mvideoData';
-      appendSource(list, id, named ? 'Публикация команды из списка · описывает конкретный контур' : 'Отраслевой аналог · не подтверждает стек компаний из списка');
+      const source = SOURCES[id];
+      const row = document.createElement('div'); row.className = 'source-item';
+      const link = document.createElement('a'); link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = `${source.title} ↗`;
+      const note = document.createElement('p'); note.textContent = `${result.direct ? 'Публикация о выбранной компании' : 'Отраслевой аналог'} · ${source.year}. ${source.note}`;
+      row.append(link, note); list.append(row);
     }
   }
-  function appendSource(list, id, relation) {
-    const source = SOURCES[id];
-    const row = document.createElement('div'); row.className = 'source-item';
-    const link = document.createElement('a'); link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = `${source.title} ↗`;
-    const note = document.createElement('p'); note.textContent = `${relation} · ${source.year}. ${source.note}`;
-    row.append(link, note); list.append(row);
-  }
+
   function render() {
-    const result = buildStack(industrySelect.value);
-    $('company-examples').textContent = result.industry.companies.map(([, name]) => name).join(' · ');
-    $('summary').textContent = `${result.industry.name} · ${result.industry.story} ML-модели включены в сценарий.`;
+    const result = buildStack(industrySelect.value, companySelect.value);
+    $('summary').textContent = `${result.company[1]} · ${result.industry.name}`;
+    $('company-context').textContent = result.direct
+      ? 'Публичные кейсы отмечены зелёным. Остальное — пример для обсуждения.'
+      : 'Для компании нет подтверждённого перечня инструментов. Оранжевым отмечен отраслевой аналог.';
     const container = $('stack'); container.replaceChildren();
     for (const item of result.items) {
-      const card = document.createElement('article'); card.className = 'stack-card' + (item.status === 'deferred' ? ' off' : '');
+      const card = document.createElement('article'); card.className = `stack-card ${item.status}`;
       const layer = document.createElement('div'); layer.className = 'layer'; layer.textContent = item.layer;
-      const heading = document.createElement('h3'); heading.textContent = item.tech;
-      const reason = document.createElement('p'); reason.className = 'reason'; reason.textContent = item.why;
-      const badge = document.createElement('span'); badge.className = `badge ${item.status}`;
-      badge.textContent = item.status === 'confirmed' ? '● Есть в публичном кейсе' : item.status === 'deferred' ? '— Пока не требуется' : '◇ Гипотеза';
-      card.append(layer, heading, reason, badge);
+      const tech = document.createElement('div'); tech.className = 'tech'; tech.textContent = item.tech;
+      const dot = document.createElement('i'); dot.className = `status-dot ${item.status}`; dot.title = { confirmed:'Опубликовано для компании', analog:'Отраслевой аналог', proposed:'Гипотеза', deferred:'Пока не требуется' }[item.status];
+      const top = document.createElement('div'); top.className = 'card-top'; top.append(layer, dot);
+      const reason = document.createElement('p'); reason.className = 'reason'; reason.textContent = item.why; reason.title = item.why;
+      card.append(top, tech, reason);
       if (item.source) {
-        const source = SOURCES[item.source];
-        const link = document.createElement('a'); link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Источник ↗'; link.title = source.note; card.append(link);
+        const link = document.createElement('a'); link.href = SOURCES[item.source].url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.className = 'card-source'; link.textContent = '↗'; link.title = SOURCES[item.source].title; link.setAttribute('aria-label', `Источник: ${SOURCES[item.source].title}`); card.append(link);
       }
       container.append(card);
     }
     renderSources(result);
   }
-  industrySelect.value = 'logistics'; render();
-  industrySelect.addEventListener('change', render);
+
+  industrySelect.value = 'logistics'; fillCompanies(); render();
+  industrySelect.addEventListener('change', () => { fillCompanies(); render(); });
+  companySelect.addEventListener('change', render);
+  $('sources-open').addEventListener('click', () => $('sources-dialog').showModal());
+  $('sources-close').addEventListener('click', () => $('sources-dialog').close());
+  $('sources-dialog').addEventListener('click', event => { if (event.target === $('sources-dialog')) $('sources-dialog').close(); });
   $('copy').addEventListener('click', async () => {
-    const value = exportText(buildStack(industrySelect.value));
-    try { await navigator.clipboard.writeText(value); $('copy').textContent = 'Скопировано ✓'; }
-    catch (_) { const area = document.createElement('textarea'); area.value = value; document.body.append(area); area.select(); document.execCommand('copy'); area.remove(); $('copy').textContent = 'Скопировано ✓'; }
-    setTimeout(() => { $('copy').textContent = 'Скопировать стек'; }, 2200);
+    const value = exportText(buildStack(industrySelect.value, companySelect.value));
+    try { await navigator.clipboard.writeText(value); }
+    catch (_) { const area = document.createElement('textarea'); area.value = value; document.body.append(area); area.select(); document.execCommand('copy'); area.remove(); }
+    $('copy').textContent = 'Скопировано ✓';
+    setTimeout(() => { $('copy').textContent = 'Скопировать'; }, 2200);
   });
 }
