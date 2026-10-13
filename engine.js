@@ -1,4 +1,4 @@
-const STATUS_LABELS = {confirmed:'Опубликованный кейс',mentioned:'Публичное упоминание',trial:'Trial в техрадаре',proposed:'Предположение',optional:'По задаче'};
+const STATUS_LABELS = {confirmed:'Опубликованный кейс',mentioned:'Публичное упоминание',trial:'Trial в техрадаре',proposed:'Предположение',optional:'Предположение · по задаче'};
 
 function buildStack(industryId, companyId) {
   const industry = INDUSTRIES.find(item => item.id === industryId) || INDUSTRIES[0];

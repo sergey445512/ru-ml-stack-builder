@@ -62,9 +62,26 @@ frame.onload=async()=>{
     await new Promise(resolve=>setTimeout(resolve,100));
     check(doc.documentElement.scrollWidth<=width+1,'Горизонтальная прокрутка '+width);
     if(width>760){
-      const stack=doc.getElementById('stack');
-      check(stack.scrollHeight<=stack.clientHeight+2,'Стек не влез '+width+'x'+height);
       check(doc.documentElement.scrollHeight<=height+2,'Страница не влезла '+width+'x'+height);
+    }
+    for(const industry of INDUSTRIES){
+      doc.getElementById('industry').value=industry.id;
+      doc.getElementById('industry').dispatchEvent(new win.Event('change'));
+      for(const [id] of industry.companies){
+        doc.getElementById('company').value=id;
+        doc.getElementById('company').dispatchEvent(new win.Event('change'));
+        for(const card of doc.querySelectorAll('.stack-card')){
+          check(card.scrollHeight<=card.clientHeight+1,'Обрезана карточка '+id+' '+width);
+          for(const element of card.querySelectorAll('.reason,.layer,.tool-chip')){
+            check(element.scrollWidth<=element.clientWidth+1,'Обрезан текст '+id+' '+width);
+            check(win.getComputedStyle(element).textOverflow!=='ellipsis','Осталось многоточие '+id);
+          }
+        }
+        for(const chip of doc.querySelectorAll('.tool-chip.optional')){
+          check(win.getComputedStyle(chip).color==='rgb(40, 75, 139)','Предположение выглядит неактивным');
+          check(chip.title.includes('Предположение'),'Не обозначена гипотеза');
+        }
+      }
     }
   }
  }catch(error){errors.push(error.stack);}
