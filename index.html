@@ -5,10 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>Конструктор Data / ML-стека</title>
-  <link rel="stylesheet" href="styles.css?v=4">
-  <script src="app.js?v=4" defer></script>
-  <script src="catalog.js?v=4" defer></script>
-  <script src="engine.js?v=4" defer></script>
+  <style>
+:root{font-family:'Segoe UI',Arial,sans-serif;color:#17352d;background:#f5f7f2;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}button,select{font:inherit}button{cursor:pointer}a{color:#18765b}
+.shell{height:100vh;min-height:600px;max-width:1600px;margin:auto;padding:0 18px;display:flex;flex-direction:column}
+.site-header{height:54px;flex:none;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #dce6db}
+.brand{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:800;letter-spacing:.04em}.brand-mark{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:#194734;color:#d0eea4;font-size:19px}.brand-light{color:#83a093}.header-note{font-size:11px;color:#829388;font-weight:600}
+.workspace{flex:1;min-height:0;display:grid;grid-template-columns:225px minmax(0,1fr);gap:12px;padding:12px 0}.controls,.results{min-width:0;border:1px solid #dfe8dd;border-radius:14px;background:#fff;box-shadow:0 4px 16px #183d2a0a}
+.controls{padding:18px;display:flex;flex-direction:column}.controls h1{font-size:19px;letter-spacing:-.035em;margin:0 0 22px}.controls label{font-size:11px;font-weight:750;margin:0 0 6px}.controls select{height:38px;width:100%;margin-bottom:18px;padding:0 9px;border:1px solid #d9e3d8;border-radius:8px;background:#f9fbf8;color:#193e30;font-size:12px;font-weight:600}.controls select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #86d0ad;outline-offset:2px}.company-context{margin:0;padding:11px 0;border-top:1px solid #edf1eb;color:#62766b;font-size:11px;line-height:1.5}.assumption{margin:auto 0 0;color:#9aa99d;font-size:10px;line-height:1.4}
+.results{min-height:0;padding:16px;display:flex;flex-direction:column}.results-top{flex:none;display:flex;justify-content:space-between;align-items:center;gap:15px}.results h2{font-size:19px;letter-spacing:-.04em;margin:0}.result-summary{font-size:11px;color:#789083;margin:4px 0 0}.actions{display:flex;gap:7px;flex:none}.actions button{border-radius:7px;padding:8px 10px;font-size:11px;font-weight:700}.secondary-button{border:1px solid #d7e2d8;background:#fff;color:#356b50}.secondary-button:hover{background:#f0f8ef}.copy-button{border:1px solid #174d37;background:#174d37;color:#fff}.copy-button:hover{background:#286f4e}
+.legend{flex:none;display:flex;gap:14px;flex-wrap:wrap;margin:13px 0 12px;padding-bottom:11px;border-bottom:1px solid #edf1eb;font-size:10px;color:#6c8073}.legend span{display:inline-flex;gap:5px;align-items:center}.status-dot{display:inline-block;width:7px;height:7px;flex:none;border-radius:50%;background:#a8b8aa}.status-dot.confirmed{background:#24a06b}.status-dot.analog{background:#e3a53d}.status-dot.proposed{background:#7187bc}.status-dot.deferred{background:#c0c9c2}
+.stack{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(58px,1fr);gap:6px;padding:0 3px 2px 0;scrollbar-color:#c5d4c6 transparent;scrollbar-width:thin}.stack-card{position:relative;min-width:0;min-height:0;border:1px solid #e5ece3;border-radius:8px;padding:7px 11px;background:#fff;overflow:hidden}.stack-card:hover{border-color:#9cc9aa;background:#fcfefb}.stack-card.deferred{background:#fafbf9}.card-top{display:flex;align-items:center;justify-content:space-between;gap:5px;padding-right:12px}.layer{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#748779;font-size:10px;font-weight:650}.tech{margin:4px 14px 1px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#193e2e;font-size:14px;font-weight:750;line-height:1.15}.deferred .tech{color:#a0aaa1}.reason{margin:0 12px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#85958a;font-size:10px;line-height:1.3}.card-source{position:absolute;right:9px;bottom:8px;font-size:14px;text-decoration:none;line-height:1}.card-source:hover{text-decoration:underline}
+dialog{width:min(560px,calc(100% - 28px));max-height:min(650px,calc(100vh - 40px));border:1px solid #d8e7d8;border-radius:13px;padding:18px 20px;box-shadow:0 25px 75px #193b3050;color:#17352d}dialog::backdrop{background:#14291f99}.dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;padding-bottom:10px;border-bottom:1px solid #e8eee6}.dialog-head h2{font-size:18px;margin:0}.dialog-head p{font-size:11px;color:#718579;margin:5px 0 0;line-height:1.5}.dialog-head button{border:0;background:#f1f5ef;color:#4c6956;border-radius:6px;width:26px;height:26px;font-size:20px;line-height:1}.source-item{padding:12px 0;border-bottom:1px solid #edf1eb}.source-item a{font-size:12px;font-weight:700}.source-item p{font-size:11px;line-height:1.5;color:#6e8175;margin:5px 0 0}
+@media(max-width:760px){.shell{height:auto;min-height:100vh}.workspace{display:block;padding:10px 0}.controls{margin-bottom:10px}.controls h1{margin-bottom:15px}.controls select{margin-bottom:12px}.assumption{margin-top:10px}.results{min-height:0}.stack{overflow:visible;grid-auto-rows:minmax(64px,auto)}}
+@media(max-width:520px){.shell{padding:0 10px}.header-note{display:none}.results-top{align-items:flex-start;flex-direction:column}.legend{gap:7px 12px}.stack{grid-template-columns:1fr}.stack-card{min-height:62px}}
+.tools-row{display:flex;align-items:center;gap:5px;margin:3px 0;flex-wrap:wrap;min-height:21px}.tool-chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;border:1px solid #e2e9df;border-radius:5px;padding:2px 5px;background:#f8fbf6;color:#214433;font-size:12px;font-weight:650;line-height:1.2;white-space:nowrap}.tool-chip:hover{border-color:#a6cbb1;background:#eef7e9}.tool-chip.optional{color:#7e8f83;background:#fafbf9;border-color:#edf0eb}.tool-chip.proposed{background:#f7f8fc}.status-dot.mentioned,.status-dot.trial{background:#dc9d36}.status-dot.optional{background:#b3beb5}.tool-detail{padding:13px 0;border-bottom:1px solid #e4ece1}.tool-detail>strong{font-size:14px}.detail-status{display:inline-block;margin-left:10px;font-size:10px;color:#60836b}.detail-status.proposed{color:#647eaf}.detail-status.mentioned,.detail-status.trial{color:#a46f21}.detail-status.optional{color:#88978a}.tool-detail>p{font-size:12px;line-height:1.5;color:#63776a}.tool-detail .source-item{border:0;padding-bottom:0}.stack-card{min-height:64px}.stack{grid-auto-rows:minmax(64px,1fr)}
+@media(min-width:1100px){.stack{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(68px,1fr)}.tools-row{gap:3px}.tool-chip{font-size:11px;padding:2px 4px}.results{padding:12px}.workspace{grid-template-columns:205px minmax(0,1fr)}}
+
+</style>
 </head>
 <body>
   <div class="shell">
@@ -34,7 +48,7 @@
           <div class="actions"><button id="sources-open" class="secondary-button" type="button">Источники</button><button id="copy" class="copy-button" type="button">Скопировать</button></div>
         </div>
         <div class="legend"><span><i class="status-dot confirmed"></i>Кейс</span><span><i class="status-dot mentioned"></i>Упоминание / Trial</span><span><i class="status-dot proposed"></i>Предположение</span><span><i class="status-dot optional"></i>По задаче</span></div>
-        <div id="stack" class="stack" aria-live="polite"></div>
+        <p id="startup-error" class="startup-error" role="alert" hidden>Не удалось запустить конструктор</p><noscript>Для конструктора нужен JavaScript. Включите его в настройках браузера.</noscript><div id="stack" class="stack" aria-live="polite"></div>
       </section>
     </main>
   </div>
@@ -43,5 +57,249 @@
     <div class="dialog-head"><div><h2 id="sources-title">Источники</h2><p id="sources-context"></p></div><button id="sources-close" type="button" aria-label="Закрыть">×</button></div>
     <div id="sources-list"></div>
   </dialog>
+<script>
+(() => {
+'use strict';
+try {
+/* Static, offline-capable teaching tool. Published cases are examples, not company profiles. */
+const SOURCES = {
+  cdek: { title: 'CDEK: трансформация платформы данных', year: '2025', url: 'https://habr.com/ru/companies/cdek_blog/articles/881618/', note: 'История PostgreSQL, Greenplum, ClickHouse, Airflow, Kafka и Superset; описывает платформу данных на конец 2024 года.' },
+  lenta: { title: 'Lenta Tech: эволюция платформы логирования', year: '2026', url: 'https://habr.com/ru/companies/lentatech/articles/1012076/', note: 'Kafka, ClickHouse и Grafana показаны в контуре логирования, а не как полный стек ритейлера.' },
+  domclick: { title: 'Домклик: проектирование Feature Platform', year: '2025', url: 'https://habr.com/ru/companies/domclick/articles/902926/', note: 'Автор описывает существующие Greenplum, Airflow, Kubeflow, PostgreSQL и варианты хранения эмбеддингов.' },
+  domclickK8s: { title: 'Домклик: Kubernetes-платформа', year: '2020', url: 'https://habr.com/ru/companies/domclick/articles/501122/', note: 'Исторический опыт Kubernetes и PostgreSQL. Не подтверждает состояние всех систем сегодня.' },
+  ozon: { title: 'Ozon Tech: внутренняя платформа', year: '2022', url: 'https://habr.com/ru/companies/ozontech/articles/708274/', note: 'Прямо перечислены PostgreSQL, S3, Redis, Kafka, ClickHouse, Kubernetes и GitLab.' },
+  magnit: { title: 'Магнит Tech: платформа данных OMNI', year: '2024', url: 'https://habr.com/ru/companies/magnit/articles/864472/', note: 'Greenplum, ClickHouse, Airflow, Kafka, S3 и DataLens в конкретном контуре данных.' },
+  tbank: { title: 'Т‑Банк: обзор платформы данных', year: '2025', url: 'https://habr.com/ru/companies/tbank/articles/926886/', note: 'В отдельных компонентах платформы названы Airflow, PostgreSQL, Redis, Kafka, S3, Spark, FastAPI, Kubernetes, Prometheus и Grafana.' },
+  avito: { title: 'Авито: DBaaS и выбор хранилищ', year: '2024', url: 'https://habr.com/ru/companies/avito/articles/854732/', note: 'Разные задачи решают PostgreSQL, Redis, ClickHouse, Kafka и другие системы.' },
+  severstal: { title: 'Северсталь: технологическая платформа', year: '2025', url: 'https://habr.com/ru/companies/severstal/articles/923512/', note: 'Промышленный пример связки Kafka, NiFi, Debezium, Spark и Airflow.' },
+  sportmaster: { title: 'SportmasterLab: интервью о технологическом стеке', year: '2024', url: 'https://habr.com/ru/amp/publications/786340/', note: 'Руководитель веб-разработки назвал Redis, Kafka, Kubernetes, Docker, GitLab, Prometheus и Grafana для своих команд; это не описание ML-платформы.' },
+  mvideo: { title: 'М.Видео: система качества данных', year: '2024', url: 'https://habr.com/ru/companies/mvideo/articles/825314/', note: 'В конкретной системе контроля качества данных используются PostgreSQL и Airflow.' },
+  mvideoData: { title: 'М.ТЕХ: вакансия инженера данных', year: 'опубликованная вакансия', url: 'https://h.careers/job/58e3a62a-7084-4fda-aeed-7fa345455726', note: 'В вакансии Greenplum, ClickHouse и Airflow названы текущим стеком команды; Trino и Iceberg описаны как планы.' },
+  tutu: { title: 'Туту: поток аналитических данных об отелях', year: '2025', url: 'https://habr.com/ru/companies/tuturu/articles/883462/', note: 'Описана связка MongoDB → Kafka → Redpanda Connect → ClickHouse в одном контуре.' },
+  ingos: { title: 'Ингосстрах: архитектура автоматического обучения моделей', year: '2025', url: 'https://habr.com/ru/companies/ingos_it/articles/901782/', note: 'Собственный конвейер обучения и предсказания; статья не подтверждает использование MLflow или Airflow.' },
+  samolet: { title: 'Самолёт: платформа данных и ML', year: '2025', url: 'https://habr.com/ru/companies/samolet/articles/912782/', note: 'CDO перечисляет MinIO, Airflow, Spark, Kafka, ClickHouse, MLflow, Qdrant, GitLab и Kubernetes в платформе данных.' },
+  rzd: { title: 'РЖД: проект мониторинга ИТ-блока', year: '2025', url: 'https://globalcio.ru/projects/54640/', note: 'Публичная карточка конкретного проекта перечисляет Kafka, Airflow, Spark, PostgreSQL, Greenplum, Grafana и Prometheus; не весь стек РЖД.' },
+  goldapple: { title: 'Золотое яблоко: технологический радар', year: 'проверено 13.10.2026', url: 'https://techradar.goldapple.ru/', note: 'Adopt: MongoDB, FastAPI, S3, Kafka, Redis, Kubernetes, Docker, GitLab, Jenkins, Artifactory, Prometheus/Grafana. PostgreSQL — Trial; MS SQL и MySQL — Hold. Это статусы выбора технологий, не инвентаризация всех БД.' },
+  dns: { title: 'DNS Технологии: вакансии инженерных команд', year: 'текущие вакансии', url: 'https://www.dns-tech.ru/vacancies', note: 'На сайте компании для отдельных команд названы Postgres, MSSQL, Kafka и RabbitMQ; это не единый стек всей компании.' },
+  detmir: { title: 'Детмир Тех: вакансия инженера платформы данных', year: '2026', url: 'https://finder.work/vacancies/36787220', note: 'В опубликованном описании команды названы Spark, Kafka, Airflow, ClickHouse, Superset и Kubernetes; ссылка ведёт на копию вакансии работодателя.' },
+  nornickel: { title: 'Норникель: годовой отчёт об инновационных технологиях', year: '2024', url: 'https://ar2024.nornickel.ru/ru/business-overview/innovation-technologies.html', note: 'Подтверждены собственная ML-среда и корпоративный MLOps-процесс; конкретные Airflow, MLflow или СУБД здесь не названы.' }
+};
+
+const INDUSTRIES = [
+  { id: 'logistics', name: 'Логистика', companies: [['cdek','СДЭК'],['onlinetrade','Onlinetrade']], analog: 'cdek', evidence:['cdek'], defaults: {scale:'large',infra:'hybrid',ml:true,events:true,analytics:true,vector:false}, story:'Заказы, статусы доставки, склады и аналитика SLA.' },
+  { id: 'industrial', name: 'Нефть и промышленность', companies: [['gazprom','Газпром'],['lukoil','Лукойл'],['rosneft','Роснефть'],['nornickel','Норникель']], analog:'severstal', evidence:['nornickel','severstal'], defaults:{scale:'large',infra:'onprem',ml:true,events:true,analytics:true,vector:false}, story:'Датчики, производство, активы, прогнозирование и корпоративные ограничения.' },
+  { id: 'retail', name: 'Ритейл', companies: [['sportmaster','Спортмастер'],['detmir','Детский мир'],['lenta','Лента'],['bristol','Бристоль']], analog:'magnit', evidence:['sportmaster','detmir','lenta','magnit'], defaults:{scale:'large',infra:'hybrid',ml:true,events:true,analytics:true,vector:false}, story:'Продажи, остатки, кассы, программы лояльности и спрос.' },
+  { id: 'ecommerce', name: 'E-commerce', companies: [['goldapple','Золотое яблоко'],['dns','DNS'],['mvideo','М.Видео'],['chitai','Читай-город']], analog:'ozon', evidence:['goldapple','dns','mvideo','mvideoData','ozon'], defaults:{scale:'large',infra:'hybrid',ml:true,events:true,analytics:true,vector:true}, story:'Каталог, корзина, заказы, рекомендации и события сайта.' },
+  { id: 'services', name: 'Сервисы', companies: [['domclick','Домклик'],['tutu','Tutu']], analog:'avito', evidence:['domclick','tutu','avito'], defaults:{scale:'medium',infra:'hybrid',ml:true,events:true,analytics:true,vector:true}, story:'Бронирование или сделки, пользовательские сценарии и поиск.' },
+  { id: 'finance', name: 'Финансы', companies: [['modulbank','Модульбанк'],['ingos','Ингосстрах']], analog:'tbank', evidence:['ingos','tbank'], defaults:{scale:'large',infra:'hybrid',ml:true,events:true,analytics:true,vector:false}, story:'Транзакции, риск, отчётность и контроль изменений.' },
+  { id: 'development', name: 'Девелоперы', companies: [['pik','ПИК'],['samolet','Самолёт']], analog:'domclick', evidence:['samolet','domclick'], defaults:{scale:'large',infra:'onprem',ml:true,events:true,analytics:true,vector:true}, story:'Объекты, сделки, документы, строительные и клиентские данные.' },
+  { id: 'transport', name: 'Транспорт', companies: [['aeroflot','Аэрофлот'],['pobeda','Победа'],['rzd','РЖД']], analog:'cdek', evidence:['rzd','cdek'], defaults:{scale:'large',infra:'hybrid',ml:true,events:true,analytics:true,vector:false}, story:'Расписания, билеты, рейсы, телеметрия и планирование.' }
+];
+
+/* Evidence is attached to each tool, not to a whole card or company. */
+Object.assign(SOURCES, {
+  goldSql: { title:'Золотое яблоко: DBA', year:'проверено 13.10.2026', url:'https://career.habr.com/vacancies/1000168814', note:'Вакансия работодателя прямо описывает сопровождение MS SQL Server. В техрадаре MS SQL имеет Hold: это ограничение новых применений, а не свидетельство отсутствия существующих БД.' },
+  goldAnalytics: { title:'Золотое яблоко: продуктовая аналитика', year:'2025', url:'https://ru.linkedin.com/posts/иван-пичурин-316b15217_золотоеяблоко-goldapple-вакансия-activity-7315238099880456192-v7jV', note:'Публикация о найме в команду: ClickHouse, BigQuery, Python/pandas и Looker Studio. Свидетельство об аналитике, не о полном ML-стеке.' },
+  cdekStack: { title:'CDEK Digital: инженерный стек', year:'2023', url:'https://hh.ru/article/31776', note:'Материал компании на hh.ru перечисляет PostgreSQL, KeyDB, RabbitMQ, GitLab и Kubernetes; это общий инженерный стек.' },
+  sportData: { title:'SM Lab: команда Data Engineering', year:'2023', url:'https://habr.com/ru/amp/publications/721334/', note:'Корпоративная публикация: Oracle и MS SQL — источники; Hadoop/Hive, Spark, Airflow, Kafka, ClickHouse — контур данных.' },
+  nornickelML: { title:'Норникель: внедрение Kolmogorov', year:'24.03.2025', url:'https://datasapience.ru/nornickel-with-glowbyte-implemented-a-corporate-ml-platform-based-on-kolmogorov', note:'Кейс вендора и интегратора: JupyterLab, MLflow, Airflow, Kubernetes, Grafana в корпоративной ML-платформе. Не называет СУБД.' },
+  ingosML: { title:'Ингосстрах: платформа данных и моделей', year:'14.05.2026', url:'https://datasapience.ru/ingosstrakh-data-sapience-glowbyte', note:'Кейс вендора: Data Ocean Nova и Kolmogorov AI/Continuity. Нельзя автоматически приписать этой инсталляции все инструменты, поддерживаемые продуктом.' },
+  lentaML: { title:'Лента: команда Geo ML', year:'архив вакансии', url:'https://h.careers/job/47202bbe-5fd1-415b-85bc-1930259489bc', note:'Сохранённый текст вакансии работодателя с разделом «Наш стек»: Postgres, PySpark, JupyterHub, Airflow, MLflow, GitLab, Kubernetes, Grafana. Состояние конкретной команды на момент найма.' },
+  mvideoML: { title:'М.Видео: Data Scientist', year:'архив вакансии', url:'https://h.careers/job/479c8cb2-9d9e-4e35-b72b-9c0e445b12d8', note:'В тексте вакансии перечислены CatBoost, PyTorch, Trino, Spark, S3, MLflow, Airflow, Kafka, Docker, Kubernetes. Вакансия не доказывает устройство всей компании.' },
+  tutuStack: { title:'Туту: официальный профиль компании', year:'проверено 13.10.2026', url:'https://habr.com/ru/companies/tuturu/profile/', note:'Компания называет MongoDB основной БД, а MariaDB и PostgreSQL — реляционными решениями. Инфраструктура: OpenShift/Kubernetes и Docker.' },
+  samoletOps: { title:'Самолёт: инфраструктура данных', year:'архив вакансии', url:'https://getmatch.ru/vacancies/21050-rukovoditel-soprovozhdeniia-infrastruktury-dannykh', note:'Вакансия работодателя описывает поддержку PostgreSQL, MinIO, JupyterHub, MLflow и мониторинг на VictoriaMetrics/Grafana.' },
+  gazpromDb: { title:'Газпром инвест: документооборот', year:'2024', url:'https://postgrespro.ru/cases/oil/gazprom-invest-directum', note:'Кейс Postgres Pro Standard в ООО «Газпром инвест», дочернем обществе. Это не стек головного ПАО «Газпром» и не ML-платформа.' },
+  lukoilDb: { title:'Лукойл: учёт грузов в портах', year:'2025', url:'https://web.ruward.ru/cases/8910/', note:'Кейс исполнителя одного проекта: 1С, PostgreSQL, Apache NiFi. Не свидетельство о корпоративном хранилище или ML-платформе.' },
+  rosneftDb: { title:'Postgres Professional: пользователи PostgreSQL', year:'2016', url:'https://postgrespro.ru/media/2016/07/20/postgrespro_ibm.pdf', note:'Историческая презентация вендора называет Роснефть среди пользователей PostgreSQL; не описывает текущий контур.' },
+  bristolDev: { title:'Бристоль: backend-команда', year:'15.08.2025', url:'https://dreamjob.ru/employers/58994/vakansii/122924610', note:'Сохранённая вакансия работодателя с явно указанным стеком Python, FastAPI, PostgreSQL. API бизнес-приложений; ML-инференс не подтверждён.' },
+  chitaiDev: { title:'Читай Технологии: вакансия DevOps', year:'публичное объявление', url:'https://t.me/s/devops_jobs_feed/15304', note:'Объявление команды для платформы Читай-город/Буквоед: Percona MySQL, PostgreSQL, Redis, Kafka, ClickHouse, RabbitMQ, Docker, Kubernetes, GitLab CI/CD, Prometheus/Grafana. Это свидетельство из найма.' },
+  modulDev: { title:'Модульбанк: опыт разработчика', year:'опыт с 2022', url:'https://career.habr.com/strkmp', note:'Самоописание сотрудника: PostgreSQL, Docker, RabbitMQ в опыте работы в Модульбанке. Слабее корпоративного кейса; ML-стек не установлен.' },
+  pikData: { title:'ПИК Digital: найм инженера данных', year:'архив объявления', url:'https://t.me/s/datajobschannel/1776?q=%23ELT', note:'Объявление руководителя: Airflow, Python/SQL, GitLab CI, Docker; соседнее объявление pik.pro упоминает PostgreSQL/Vertica. Используем только однозначно привязанные к ПИК Digital инструменты.' },
+  aeroflotWeb: { title:'Аэрофлот: сайт и приложение, кейс РАМАКС', year:'проверено 13.10.2026', url:'https://www.ramax.ru/kejsy/mobilnoe-prilozhenie-i-sayt-pao-aeroflot/', note:'Исполнитель перечисляет PostgreSQL, ClickHouse, Redis, FastAPI, RabbitMQ, Kafka, Jenkins, Docker, Kubernetes, Prometheus/Grafana. Это web-контур; использование тех же средств ML-командой — предположение.' },
+  pobedaDb: { title:'Победа: управленческий учёт', year:'2025', url:'https://eawards.1c.ru/projects/integraciya-i-avtomatizaciya-upravlencheskogo-ucheta-dlya-aviakompanii-pobeda-315217/', note:'Карточка внедрения: MS SQL Server и 1С:Предприятие 8.3/Управление холдингом. ML-инструменты не названы.' }
+});
+
+const evidenceTool = (tech, source, note = '', status = 'confirmed') => ({tech, source, note, status});
+const hypothesisTool = (tech, note = '') => ({tech, source:null, note, status:'proposed'});
+const optionalTool = (tech, note) => ({tech, source:null, note, status:'optional'});
+const e = evidenceTool, h = hypothesisTool, o = optionalTool;
+const fromCase = (names, source, status='confirmed') => names.map(name => e(name, source, '', status));
+
+const COMPANY_PROFILES = {
+  cdek: {note:'Кейсы платформы данных и backend; инструменты обучения пока предполагаем.', tools:{
+    sql:fromCase(['PostgreSQL'],'cdek'), dwh:fromCase(['Greenplum','ClickHouse'],'cdek'), pipeline:fromCase(['Airflow'],'cdek'), cache:fromCase(['KeyDB'],'cdekStack'), git:[e('GitLab','cdekStack'),h('GitLab CI/CD')], runtime:fromCase(['Kubernetes'],'cdekStack'), broker:[e('Kafka','cdek','Аналитические события.'),e('RabbitMQ','cdekStack','Очереди backend-задач; отдельная роль.')], bi:fromCase(['Superset'],'cdek') }},
+  onlinetrade: {note:'Надёжный перечень инструментов не найден. Показан учебный ML-сценарий, а не установленный стек компании.', tools:{}},
+  gazprom: {note:'Подтверждение относится к Газпром инвест. Остальной ML-контур — предположение для промышленного сценария.', tools:{sql:[e('Postgres Pro','gazpromDb','Только дочернее общество «Газпром инвест».')]}},
+  lukoil: {note:'Найден отдельный проект учёта грузов; ML-платформа публично не установлена.', tools:{sql:fromCase(['PostgreSQL'],'lukoilDb'),nosql:[e('1С','lukoilDb','Учётная система, не отдельная СУБД.')]}},
+  rosneft: {note:'Есть историческое упоминание PostgreSQL (2016). Актуальный ML-стек остаётся предположением.', tools:{sql:[e('PostgreSQL','rosneftDb','Историческое упоминание; текущая роль неизвестна.','mentioned')]}},
+  nornickel: {note:'ML-платформа Kolmogorov подтверждена кейсом внедрения; конкретные СУБД в нём не раскрыты.', tools:{prep:[e('JupyterLab','nornickelML'),h('pandas / SQL')],experiments:[e('MLflow','nornickelML','Учёт экспериментов внутри Kolmogorov.')],pipeline:fromCase(['Airflow'],'nornickelML'),runtime:fromCase(['Kubernetes'],'nornickelML'),monitor:[h('Prometheus'),e('Grafana','nornickelML')]}},
+  sportmaster: {note:'Есть отдельные кейсы Data Engineering и web-команд; не все инструменты относятся к одной ML-системе.', tools:{sql:fromCase(['Oracle','SQL Server'],'sportData'),dwh:fromCase(['Hive','ClickHouse'],'sportData'),storage:[e('Hadoop / HDFS','sportData','Озеро данных Hadoop.'),h('S3','Отдельно для артефактов моделей; не подтверждено.')],distributed:fromCase(['Spark / PySpark'],'sportData'),pipeline:fromCase(['Airflow'],'sportData'),cache:fromCase(['Redis'],'sportmaster'),git:[e('GitLab','sportData'),h('GitLab CI/CD')],containers:fromCase(['Docker'],'sportmaster'),runtime:fromCase(['Kubernetes'],'sportmaster'),monitor:fromCase(['Prometheus','Grafana'],'sportmaster'),broker:fromCase(['Kafka'],'sportData')}},
+  detmir: {note:'Инструменты платформы данных взяты из вакансии; детали обучения и registry пока предполагаем.', tools:{dwh:fromCase(['ClickHouse'],'detmir','mentioned'),distributed:fromCase(['Spark / PySpark'],'detmir','mentioned'),pipeline:fromCase(['Airflow'],'detmir','mentioned'),runtime:fromCase(['Kubernetes'],'detmir','mentioned'),broker:fromCase(['Kafka'],'detmir','mentioned'),bi:fromCase(['Superset'],'detmir','mentioned')}},
+  lenta: {note:'Geo ML описан в вакансии. Kafka/ClickHouse/Grafana также есть в отдельном кейсе логирования.', tools:{sql:fromCase(['PostgreSQL'],'lentaML','mentioned'),dwh:[h('ClickHouse','Кейс подтверждает ClickHouse для логов; его роль как DWH для обучения не установлена.')],prep:[e('JupyterHub','lentaML','','mentioned'),h('pandas / SQL')],distributed:fromCase(['Spark / PySpark'],'lentaML','mentioned'),pipeline:fromCase(['Airflow'],'lentaML','mentioned'),experiments:fromCase(['MLflow'],'lentaML','mentioned'),git:[e('GitLab','lentaML','','mentioned'),h('GitLab CI/CD')],runtime:fromCase(['Kubernetes'],'lentaML','mentioned'),monitor:[h('Prometheus'),e('Grafana','lenta')],broker:[e('Kafka','lenta','Подтверждено в сборе логов; ML-события — предположение.')]}},
+  bristol: {note:'Найден стек backend-команды в вакансии. Платформа обучения и хранилище ML-данных не раскрыты.', tools:{sql:fromCase(['PostgreSQL'],'bristolDev','mentioned'),api:[e('FastAPI','bristolDev','В вакансии backend, применение для ML-инференса предполагается.','mentioned')]}},
+  goldapple: {note:'SQL Server — эксплуатация; PostgreSQL — Trial в радаре. MongoDB — отдельный документный слой. ML-платформа целиком не раскрыта.', tools:{
+    sql:[e('SQL Server','goldSql','Эксплуатация подтверждена задачами DBA; в радаре Hold.','mentioned'),e('PostgreSQL','goldapple','Trial: ограниченное применение/оценка; не называем стандартом.','trial')],
+    nosql:[e('MongoDB','goldapple','Adopt. Документы и сервисные данные; не заменяет SQL-базы.')],dwh:fromCase(['ClickHouse','BigQuery'],'goldAnalytics','mentioned'),storage:fromCase(['S3'],'goldapple'),prep:[h('JupyterLab'),e('pandas / SQL','goldAnalytics','','mentioned')],cache:fromCase(['Redis'],'goldapple'),api:[e('FastAPI','goldapple','Adopt в общем техрадаре; конкретный ML-serving не описан.')],git:fromCase(['GitLab','Jenkins'],'goldapple'),containers:fromCase(['Docker','Artifactory'],'goldapple'),runtime:fromCase(['Kubernetes'],'goldapple'),monitor:fromCase(['Prometheus','Grafana'],'goldapple'),broker:fromCase(['Kafka'],'goldapple'),bi:fromCase(['Looker Studio'],'goldAnalytics','mentioned')}},
+  dns: {note:'SQL Server и PostgreSQL перечислены на карьерном сайте DNS. Остальной ML-контур — сценарий.', tools:{sql:fromCase(['PostgreSQL','SQL Server'],'dns','mentioned'),nosql:[e('1С','dns','Источник учётных данных; не отдельная СУБД.','mentioned')],broker:fromCase(['Kafka','RabbitMQ'],'dns','mentioned')}},
+  mvideo: {note:'DWH подтверждён в материалах команды; детали ML взяты из вакансии Data Scientist.', tools:{sql:fromCase(['PostgreSQL'],'mvideo'),dwh:fromCase(['Greenplum','ClickHouse'],'mvideoData','mentioned'),storage:fromCase(['S3'],'mvideoML','mentioned'),train:fromCase(['CatBoost','PyTorch'],'mvideoML','mentioned'),distributed:fromCase(['Spark / PySpark'],'mvideoML','mentioned'),pipeline:fromCase(['Airflow'],'mvideo'),experiments:fromCase(['MLflow'],'mvideoML','mentioned'),containers:fromCase(['Docker'],'mvideoML','mentioned'),runtime:fromCase(['Kubernetes'],'mvideoML','mentioned'),broker:fromCase(['Kafka'],'mvideoML','mentioned')}},
+  chitai: {note:'Перечень из объявления Читай Технологии относится к web-платформе. ML-процессы дополняем предположениями.', tools:{sql:fromCase(['PostgreSQL','Percona MySQL'],'chitaiDev','mentioned'),dwh:fromCase(['ClickHouse'],'chitaiDev','mentioned'),cache:fromCase(['Redis'],'chitaiDev','mentioned'),git:fromCase(['GitLab','GitLab CI/CD'],'chitaiDev','mentioned'),containers:fromCase(['Docker'],'chitaiDev','mentioned'),runtime:fromCase(['Kubernetes'],'chitaiDev','mentioned'),monitor:fromCase(['Prometheus','Grafana'],'chitaiDev','mentioned'),broker:fromCase(['Kafka','RabbitMQ'],'chitaiDev','mentioned')}},
+  domclick: {note:'Feature Platform: Greenplum для истории и фичей, PostgreSQL/Redis онлайн, Airflow для batch, Kubeflow для обучения.', tools:{sql:fromCase(['PostgreSQL'],'domclick'),dwh:fromCase(['Greenplum'],'domclick'),prep:[h('JupyterLab'),e('Python / SQL','domclick')],features:[e('dbt','domclick','Расчёт фичей на SQL.'),e('SQL-витрины','domclick','Фичи в Greenplum и доставка в онлайн-контур.')],pipeline:[e('Airflow','domclick','Данные и batch-скоринг.'),e('Kubeflow','domclick','Отдельно: выполнение обучения.')],cache:fromCase(['Redis'],'domclick'),api:[e('Python-сервис','domclick','Фреймворк автором не назван.')],runtime:fromCase(['Kubernetes'],'domclickK8s'),vector:[e('Elasticsearch','domclick','Указан в онлайн-контуре для эмбеддингов. Не подменяем автоматически Qdrant.')] }},
+  tutu: {note:'Компания прямо называет MongoDB, PostgreSQL и MariaDB. MLflow/Airflow для Туту пока не подтверждены.', tools:{sql:fromCase(['PostgreSQL','MariaDB'],'tutuStack'),nosql:fromCase(['MongoDB'],'tutuStack'),dwh:fromCase(['ClickHouse'],'tutu'),containers:fromCase(['Docker'],'tutuStack'),runtime:[e('OpenShift / Kubernetes','tutuStack')],broker:[e('Kafka','tutu','Аналитические события отелей.'),e('RabbitMQ','tutuStack','Упоминается в legacy-командах.')] }},
+  modulbank: {note:'Есть свидетельство сотрудника о backend-стеке; инструменты ML-платформы пока предполагаем.', tools:{sql:fromCase(['PostgreSQL'],'modulDev','mentioned'),containers:fromCase(['Docker'],'modulDev','mentioned'),broker:fromCase(['RabbitMQ'],'modulDev','mentioned')}},
+  ingos: {note:'Кейс 2026: Data Ocean Nova и Kolmogorov AI. Не приписываем без доказательств внутренние компоненты продукта.', tools:{dwh:fromCase(['Data Ocean Nova'],'ingosML'),experiments:[e('Kolmogorov AI','ingosML','Жизненный цикл моделей; это не подтверждение MLflow.')],pipeline:[e('Kolmogorov Continuity','ingosML','Управляет этапами model management; внутренний batch-планировщик не раскрыт.')]}},
+  pik: {note:'Найм ПИК Digital подтверждает требования к Airflow, GitLab CI и Docker. БД и ML registry остаются гипотезами.', tools:{pipeline:fromCase(['Airflow'],'pikData','mentioned'),git:fromCase(['GitLab CI/CD'],'pikData','mentioned'),containers:fromCase(['Docker'],'pikData','mentioned')}},
+  samolet: {note:'Платформа данных и ML описана командой; PostgreSQL, JupyterHub и мониторинг дополнены вакансией инфраструктуры.', tools:{sql:fromCase(['PostgreSQL'],'samoletOps','mentioned'),dwh:fromCase(['ClickHouse'],'samolet'),storage:fromCase(['MinIO'],'samolet'),prep:[e('JupyterHub','samoletOps','','mentioned'),h('pandas / SQL')],distributed:fromCase(['Spark / PySpark'],'samolet'),pipeline:fromCase(['Airflow'],'samolet'),experiments:fromCase(['MLflow'],'samolet'),git:[e('GitLab','samolet'),h('GitLab CI/CD')],runtime:fromCase(['Kubernetes'],'samolet'),monitor:fromCase(['VictoriaMetrics','Grafana'],'samoletOps','mentioned'),vector:fromCase(['Qdrant'],'samolet'),broker:fromCase(['Kafka'],'samolet')}},
+  aeroflot: {note:'Подтверждён стек сайта и приложения у исполнителя РАМАКС; обучение моделей и registry — предположения.', tools:{sql:fromCase(['PostgreSQL'],'aeroflotWeb'),dwh:[e('ClickHouse','aeroflotWeb','Указан в web-проекте; роль обучающего DWH не раскрыта.')],cache:fromCase(['Redis'],'aeroflotWeb'),api:[e('FastAPI','aeroflotWeb','Подтверждён в web-стеке; ML-serving не установлен.')],git:[h('Git'),e('Jenkins','aeroflotWeb')],containers:fromCase(['Docker'],'aeroflotWeb'),runtime:fromCase(['Kubernetes'],'aeroflotWeb'),monitor:fromCase(['Prometheus','Grafana'],'aeroflotWeb'),broker:fromCase(['Kafka','RabbitMQ'],'aeroflotWeb')}},
+  pobeda: {note:'MS SQL Server и 1С подтверждены в управленческом учёте. ML-сценарий для гайда предполагаемый.', tools:{sql:fromCase(['SQL Server'],'pobedaDb'),nosql:[e('1С','pobedaDb','Учётная система, не NoSQL-БД.')]}},
+  rzd: {note:'Данные относятся к проекту мониторинга ИТ-блока РЖД; не описывают все ML-проекты компании.', tools:{sql:fromCase(['PostgreSQL'],'rzd'),dwh:fromCase(['Greenplum'],'rzd'),distributed:fromCase(['Spark / PySpark'],'rzd'),pipeline:fromCase(['Airflow'],'rzd'),monitor:fromCase(['Prometheus','Grafana'],'rzd'),broker:fromCase(['Kafka'],'rzd')}}
+};
+
+const LAYERS = [
+  ['sql','SQL-базы · источники данных','Заказы, клиенты и операции → выгрузки для признаков. ML обычно читает реплики или витрины, а не нагружает боевую БД.'],
+  ['nosql','Другие источники','Документы, каталог или учётные системы. Дополнительный источник не нужен только ради полноты списка.'],
+  ['dwh','DWH и аналитические БД','История и обучающие выборки. При двух БД роли могут различаться: корпоративное DWH и быстрые витрины.'],
+  ['storage','Датасеты и артефакты','Снимки выборок, файлы моделей и большие объекты. Наличие S3 API не означает использование AWS.'],
+  ['prep','Ноутбуки и подготовка данных','Исследовать данные в ноутбуке; pandas/Python и SQL — подготовить выборку.'],
+  ['train','Обучение моделей','CatBoost — табличный baseline; PyTorch добавляется для нейросетей, текста или изображений.'],
+  ['features','Расчёт и хранение признаков','Повторяемый расчёт фичей в SQL-витринах. Отдельный Feature Store нужен только при сложности повторного использования и онлайн-доступа.'],
+  ['distributed','Распределённая обработка','Spark нужен, когда объём или время расчёта не позволяют работать на одном узле. Размер компании сам по себе не аргумент.'],
+  ['pipeline','Пайплайны и batch-скоринг','Данные → обучение → проверка → массовые прогнозы по расписанию. Несколько оркестраторов допустимы для разных процессов.'],
+  ['experiments','Эксперименты и версии моделей','Сравнение запусков, параметры, метрики и артефакты. Выбор версии для релиза — отдельный управляемый шаг.'],
+  ['api','Онлайн-инференс','Сервис загружает модель и возвращает предсказание по запросу. При чисто пакетном сценарии API не обязателен.'],
+  ['cache','Кэш и онлайн-признаки','Быстро получать фичи или повторные результаты. Использовать при измеримой потребности в низкой задержке.'],
+  ['broker','События и очереди','Kafka — поток событий; RabbitMQ — очереди задач. Оба нужны вместе только при разных сценариях.'],
+  ['git','Код и CI/CD','Git хранит код; CI/CD проверяет изменения и доставляет релиз модели вместе с совместимым кодом.'],
+  ['containers','Образы и их хранение','Docker собирает окружение; реестр хранит версии образов для запуска и отката.'],
+  ['runtime','Запуск и масштабирование','Kubernetes/OpenShift — возможная общая платформа компании. Компактный стенд можно запускать в Docker Compose.'],
+  ['monitor','Метрики сервиса и дашборды','Prometheus/VictoriaMetrics собирают метрики, Grafana показывает задержки, ошибки и нагрузку.'],
+  ['quality','Качество модели и данных','Отдельно считать качество по меткам и изменения входных данных. Evidently — возможный инструмент, не обязательный стандарт.'],
+  ['bi','Бизнес-отчёты','Проверять эффект прогнозов и собирать отчётность; BI дополняет технический мониторинг.'],
+  ['vector','Поиск по эмбеддингам','Только для поиска похожих объектов, рекомендаций или RAG. Обычный прогноз оттока не требует векторной БД.']
+];
+
+const STATUS_LABELS = {confirmed:'Опубликованный кейс',mentioned:'Публичное упоминание',trial:'Trial в техрадаре',proposed:'Предположение',optional:'По задаче'};
+
+function buildStack(industryId, companyId) {
+  const industry = INDUSTRIES.find(item => item.id === industryId) || INDUSTRIES[0];
+  const company = industry.companies.find(([id]) => id === companyId) || industry.companies[0];
+  const profile = COMPANY_PROFILES[company[0]];
+  const industrial = industry.id === 'industrial';
+  const defaults = {
+    sql:[h('PostgreSQL','Учебный выбор SQL-БД. Наличие этой СУБД у компании не установлено.')],
+    nosql:[o('Не добавляем','Нет подтверждённого дополнительного источника, требующего отдельной технологии.')],
+    dwh:[h(industrial || industry.id === 'finance' ? 'Greenplum' : 'ClickHouse','Предполагаемая аналитическая БД для выборок и витрин; реальное DWH нужно уточнить.')],
+    storage:[h(industrial || industry.id === 'development' ? 'MinIO (S3)' : 'S3','Хранить версии обучающих данных и модели; это пример архитектуры.')],
+    prep:[h('JupyterLab','Среда исследования данных.'),h('pandas / SQL','Подготовка табличных выборок.')],
+    train:[h('CatBoost','Baseline для табличной задачи; не утверждение о моделях компании.')],
+    features:[h('SQL-витрины','Общий код расчёта признаков для обучения и batch-скоринга.')],
+    distributed:[o('Spark / PySpark','Добавить, если выборки или расчёты уже не помещаются на одной машине.')],
+    pipeline:[h('Airflow','Загрузка данных, переобучение и batch-скоринг по расписанию.')],
+    experiments:[h('MLflow','Пример средства учёта экспериментов и версий моделей.')],
+    api:[h('FastAPI','Пример API для онлайн-предсказаний.')],
+    cache:[o('Redis','Кэш или онлайн-признаки, если этого требует задержка ответа.')],
+    broker:[o('Kafka','Добавить для потокового обновления данных; для регулярных SQL-выгрузок не обязателен.')],
+    git:[h('GitLab'),h('GitLab CI/CD','Проверка и выпуск кода, DAG-ов и совместимых моделей.')],
+    containers:[h('Docker'),h('GitLab Registry','Хранение собранных образов, не файлов моделей.')],
+    runtime:[h('Kubernetes','Предположение об общей платформе компании, не обязательный минимум для ML.')],
+    monitor:[h('Prometheus'),h('Grafana')],
+    quality:[h('Метрики по меткам','Проверки качества и срезов после получения истинных ответов.'),o('Evidently','Если нужны готовые отчёты по данным и дрейфу.')],
+    bi:[o('Superset','Если бизнесу нужны интерактивные отчёты поверх витрин.')],
+    vector:[o(industry.defaults.vector ? 'Qdrant' : 'Не добавляем','Векторный поиск нужен только для отдельной задачи с эмбеддингами.')]
+  };
+  if (industrial || industry.id === 'ecommerce') defaults.train.push(o('PyTorch','Только если есть нейросетевая задача: изображения, текст или сложное ранжирование.'));
+  const items = LAYERS.map(([id,layer,why]) => ({id,layer,why,tools:(profile.tools[id] || defaults[id]).map(tool=>({...tool}))}));
+  const containers = items.find(item=>item.id==='containers');
+  if (containers.tools.length === 1 && containers.tools[0].tech === 'Docker') containers.tools.push(h('OCI registry','Реестр для версий образов нужен при релизе; конкретный продукт компании не установлен.'));
+  const sources = [...new Set(items.flatMap(item=>item.tools.map(tool=>tool.source)).filter(Boolean))];
+  return {industry, company, profile, items, sources};
+}
+
+function exportText(result) {
+  const lines = [`${result.company[1]} · ${result.industry.name}`, 'Примерный стек для ML-инженера. Проверено 13.10.2026.', result.profile.note, 'Опубликовано означает конкретный контур/дату, а не полный стек компании. Вакансии и Trial не доказывают повсеместное использование.', ''];
+  for (const item of result.items) {
+    lines.push(`${item.layer}:`, item.why);
+    for (const tool of item.tools) lines.push(`  ${tool.tech} [${STATUS_LABELS[tool.status]}]${tool.note ? ` — ${tool.note}` : ''}${tool.source ? `\n  ${SOURCES[tool.source].title}: ${SOURCES[tool.source].url}\n  ${SOURCES[tool.source].note}` : ''}`);
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
+if (typeof document !== 'undefined' && document.getElementById('industry')) {
+  const $ = id => document.getElementById(id);
+  const industrySelect = $('industry'), companySelect = $('company');
+  let current;
+  for (const industry of INDUSTRIES) industrySelect.add(new Option(industry.name, industry.id));
+  function fillCompanies() {
+    const industry = INDUSTRIES.find(item=>item.id===industrySelect.value);
+    companySelect.replaceChildren();
+    for (const [id,name] of industry.companies) companySelect.add(new Option(name,id));
+  }
+  function appendSource(list,id) {
+    const source=SOURCES[id];
+    const row=document.createElement('div');row.className='source-item';
+    const link=document.createElement('a');link.href=source.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=`${source.title} ↗`;
+    const note=document.createElement('p');note.textContent=`${source.year}. ${source.note}`;
+    row.append(link,note);list.append(row);
+  }
+  function openDetails(item) {
+    $('sources-title').textContent=item.layer;
+    $('sources-context').textContent=`${current.company[1]} · ${item.why}`;
+    const list=$('sources-list');list.replaceChildren();
+    for (const tool of item.tools) {
+      const row=document.createElement('div');row.className='tool-detail';
+      const title=document.createElement('strong');title.textContent=tool.tech;
+      const status=document.createElement('span');status.className=`detail-status ${tool.status}`;status.textContent=STATUS_LABELS[tool.status];
+      const note=document.createElement('p');note.textContent=tool.note || (tool.source ? 'Указано в источнике ниже; область применения ограничена описанным проектом.' : 'Учебное предположение; не подтверждено для выбранной компании.');
+      row.append(title,status,note);if(tool.source) appendSource(row,tool.source);list.append(row);
+    }
+    $('sources-dialog').showModal();
+  }
+  function render() {
+    current=buildStack(industrySelect.value,companySelect.value);
+    $('summary').textContent=`${current.company[1]} · стек для ML-инженера`;
+    $('company-context').textContent=current.profile.note;
+    const container=$('stack');container.replaceChildren();
+    for (const item of current.items) {
+      const card=document.createElement('article');card.className='stack-card';card.dataset.layer=item.id;
+      const layer=document.createElement('div');layer.className='layer';layer.textContent=item.layer;
+      const toolsRow=document.createElement('div');toolsRow.className='tools-row';
+      for (const tool of item.tools) {
+        const button=document.createElement('button');button.type='button';button.className=`tool-chip ${tool.status}`;button.title=`${STATUS_LABELS[tool.status]}${tool.note ? ': '+tool.note : ''}. Нажмите для подробностей.`;
+        button.setAttribute('aria-label',`${tool.tech}: ${STATUS_LABELS[tool.status]}. Подробнее`);
+        const dot=document.createElement('i');dot.className=`status-dot ${tool.status}`;dot.setAttribute('aria-hidden','true');
+        button.append(dot,document.createTextNode(tool.tech));button.addEventListener('click',()=>openDetails(item));toolsRow.append(button);
+      }
+      const reason=document.createElement('p');reason.className='reason';reason.textContent=item.why;reason.title=item.why;
+      card.append(layer,toolsRow,reason);container.append(card);
+    }
+  }
+  industrySelect.addEventListener('change',()=>{fillCompanies();render();});
+  companySelect.addEventListener('change',render);
+  $('sources-open').addEventListener('click',()=>{
+    $('sources-title').textContent='Источники';$('sources-context').textContent=`${current.company[1]} · проверено 13.10.2026. ${current.profile.note}`;
+    const list=$('sources-list');list.replaceChildren();
+    for(const id of current.sources)appendSource(list,id);
+    if(!current.sources.length)list.textContent='Подходящие подтверждения инструментов не найдены. Все инструменты — предположения для учебного ML-сценария.';
+    $('sources-dialog').showModal();
+  });
+  $('sources-close').addEventListener('click',()=>$('sources-dialog').close());
+  $('sources-dialog').addEventListener('click',event=>{if(event.target===$('sources-dialog')){const box=event.target.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)event.target.close();}});
+  $('copy').addEventListener('click',async()=>{
+    const value=exportText(current);
+    try {await navigator.clipboard.writeText(value);}
+    catch(_){const area=document.createElement('textarea');area.value=value;document.body.append(area);area.select();const copied=document.execCommand('copy');area.remove();if(!copied){$('copy').textContent='Не удалось скопировать';return;}}
+    $('copy').textContent='Скопировано ✓';setTimeout(()=>{$('copy').textContent='Скопировать';},2200);
+  });
+  fillCompanies();render();
+}
+
+} catch (error) {
+const notice = document.getElementById('startup-error');
+notice.hidden = false;
+notice.textContent += ': ' + error.message;
+console.error(error);
+}
+})();
+</script>
 </body>
 </html>

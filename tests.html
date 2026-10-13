@@ -34,6 +34,7 @@ frame.style='position:absolute;left:-5000px;top:0;width:1366px;height:768px;bord
 frame.onload=async()=>{
  try{
   const doc=frame.contentDocument,win=frame.contentWindow;
+  check(doc.querySelectorAll('script[src],link[rel="stylesheet"]').length===0,'Страница зависит от внешних файлов');
   for(const industry of INDUSTRIES){
     doc.getElementById('industry').value=industry.id;
     doc.getElementById('industry').dispatchEvent(new win.Event('change',{bubbles:true}));

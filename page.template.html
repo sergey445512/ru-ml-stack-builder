@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Конструктор Data / ML-стека</title>
+  <!-- INLINE_STYLES -->
+</head>
+<body>
+  <div class="shell">
+    <header class="site-header">
+      <div class="brand"><span class="brand-mark">⌘</span><span>STACK<span class="brand-light">/LAB</span></span></div>
+      <span class="header-note">Конструктор Data / ML-стека</span>
+    </header>
+
+    <main class="workspace">
+      <aside class="controls" aria-labelledby="config-title">
+        <h1 id="config-title">Собрать стек</h1>
+        <label for="industry">Направление</label>
+        <select id="industry"></select>
+        <label for="company">Компания</label>
+        <select id="company"></select>
+        <p id="company-context" class="company-context"></p>
+        <p class="assumption">ML есть во всех сценариях.<br>Нажми на инструмент — откроются роль и источник.</p>
+      </aside>
+
+      <section class="results" aria-labelledby="results-title">
+        <div class="results-top">
+          <div><h2 id="results-title">Примерный стек</h2><p id="summary" class="result-summary"></p></div>
+          <div class="actions"><button id="sources-open" class="secondary-button" type="button">Источники</button><button id="copy" class="copy-button" type="button">Скопировать</button></div>
+        </div>
+        <div class="legend"><span><i class="status-dot confirmed"></i>Кейс</span><span><i class="status-dot mentioned"></i>Упоминание / Trial</span><span><i class="status-dot proposed"></i>Предположение</span><span><i class="status-dot optional"></i>По задаче</span></div>
+        <p id="startup-error" class="startup-error" role="alert" hidden>Не удалось запустить конструктор</p><noscript>Для конструктора нужен JavaScript. Включите его в настройках браузера.</noscript><div id="stack" class="stack" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="sources-dialog" aria-labelledby="sources-title">
+    <div class="dialog-head"><div><h2 id="sources-title">Источники</h2><p id="sources-context"></p></div><button id="sources-close" type="button" aria-label="Закрыть">×</button></div>
+    <div id="sources-list"></div>
+  </dialog>
+<!-- INLINE_SCRIPTS -->
+</body>
+</html>
