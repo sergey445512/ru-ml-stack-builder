@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><title>Проверки конструктора</title>
+<body><h1>Проверки конструктора</h1><pre id="result">Запуск…</pre>
+<script src="app.js"></script>
+<script>
+const errors = [];
+function check(condition, message) { if (!condition) errors.push(message); }
+check(INDUSTRIES.length === 8, 'Должны быть все восемь направлений');
+check(INDUSTRIES.reduce((count, item) => count + item.companies.length, 0) === 23, 'Должны быть все 23 компании из списка');
+for (const industry of INDUSTRIES) {
+  check(SOURCES[industry.analog], `Нет отраслевого источника: ${industry.id}`);
+  for (const [id] of industry.companies) {
+    const result = buildStack(industry.id, id, defaultsFor(industry.id));
+    check(result.items.length === 20, `Неполный стек: ${id}`);
+    for (const item of result.items) {
+      check(item.status !== 'confirmed' || (DIRECT[id] && DIRECT[id][item.tech] === item.source && SOURCES[item.source]), `Ложное подтверждение: ${id} / ${item.tech}`);
+    }
+    if (!DIRECT[id]) check(result.items.every(item => item.status !== 'confirmed'), `Неизвестный стек помечен как факт: ${id}`);
+  }
+}
+const cdek = buildStack('logistics','cdek',defaultsFor('logistics'));
+check(cdek.items.some(item => item.tech === 'Greenplum' && item.status === 'confirmed'), 'Не показано подтверждённое DWH СДЭК');
+const light = buildStack('logistics','cdek',{scale:'small',analytics:false,ml:false,events:false,vector:false});
+for (const layer of ['Аналитическая БД / DWH','Распределённая обработка','BI-отчёты','Векторный поиск','Брокер событий']) check(light.items.find(item => item.layer === layer)?.status === 'deferred', `Лишний слой: ${layer}`);
+const ecommerce = buildStack('ecommerce','goldapple',defaultsFor('ecommerce'));
+check(ecommerce.analog === 'ozon' && ecommerce.items.every(item => item.status !== 'confirmed'), 'Ozon ошибочно приписан Золотому яблоку');
+const output = document.getElementById('result');
+output.dataset.status = errors.length ? 'fail' : 'pass';
+output.textContent = errors.length ? `FAIL: ${errors.join('; ')}` : 'PASS: все сценарии и источники проверены';
+</script></body></html>

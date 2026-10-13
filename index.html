@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Конструктор Data / ML-стека</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="site-header">
+      <div class="brand"><span class="brand-mark">⌘</span><span>STACK<span class="brand-light">/LAB</span></span></div>
+      <span class="header-note">Архитектурный тренажёр · РФ</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">ИНТЕРАКТИВНЫЙ КОНСТРУКТОР</p>
+          <h1>От задач компании<br>к <em>технологическому стеку</em></h1>
+          <p class="lead">Выбери направление, компанию и условия задачи. Конструктор покажет возможный Data / ML-стек, объяснит каждый слой и отделит опубликованные факты от архитектурных предположений.</p>
+        </div>
+        <div class="hero-diagram" aria-hidden="true">
+          <div class="diagram-label">ЛОГИКА ВЫБОРА</div>
+          <div class="diagram-node">Компания <span>01</span></div>
+          <div class="diagram-connector"></div>
+          <div class="diagram-node">Нагрузка и задачи <span>02</span></div>
+          <div class="diagram-connector"></div>
+          <div class="diagram-node active">Стек + аргументы <span>03</span></div>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <aside class="controls" aria-labelledby="config-title">
+          <div class="panel-heading"><span class="step">01</span><div><h2 id="config-title">Настрой сценарий</h2><p>Параметры можно менять в любом порядке.</p></div></div>
+          <label for="industry">Направление бизнеса</label>
+          <select id="industry"></select>
+          <label for="company">Компания для сценария</label>
+          <select id="company"></select>
+          <p class="field-hint" id="company-context"></p>
+
+          <label for="scale">Масштаб ИТ и данных</label>
+          <select id="scale"><option value="small">Небольшой</option><option value="medium">Средний</option><option value="large">Крупный</option></select>
+
+          <label for="infra">Где развёрнуты системы</label>
+          <select id="infra"><option value="cloud">Преимущественно облако</option><option value="onprem">Собственные серверы</option><option value="hybrid">Гибридная инфраструктура</option></select>
+
+          <div class="divider"></div>
+          <div class="toggle-row"><div><label for="ml">Есть ML-модели</label><p>Обучение, версии и инференс</p></div><input id="ml" type="checkbox"></div>
+          <div class="toggle-row"><div><label for="events">Нужен поток событий</label><p>Заказы, операции, клики, интеграции</p></div><input id="events" type="checkbox"></div>
+          <div class="toggle-row"><div><label for="analytics">Есть аналитическое хранилище</label><p>Отчёты и большие выборки</p></div><input id="analytics" type="checkbox"></div>
+          <div class="toggle-row"><div><label for="vector">Нужен поиск по эмбеддингам</label><p>Семантический или рекомендательный поиск</p></div><input id="vector" type="checkbox"></div>
+          <button class="secondary-button" id="reset" type="button">↺ Вернуть параметры примера</button>
+        </aside>
+
+        <section class="results" aria-labelledby="results-title">
+          <div class="results-top"><div><p class="eyebrow">02 / РЕЗУЛЬТАТ</p><h2 id="results-title">Примерный стек</h2><p id="summary" class="result-summary"></p></div><button id="copy" class="copy-button" type="button">Скопировать стек</button></div>
+          <div class="notice"><strong>Как читать результат.</strong> «Подтверждено» означает, что технология упомянута в публикации команды — это не полный стек компании и не доказательство применения в каждом продукте. «Гипотеза» — вариант для выбранного сценария, а не утверждение о компании.</div>
+          <div class="legend"><span class="badge confirmed">● Подтверждено публикацией</span><span class="badge proposed">◇ Архитектурная гипотеза</span><span class="badge deferred">— Пока не требуется</span></div>
+          <div id="stack" class="stack" aria-live="polite"></div>
+          <section class="sources" aria-labelledby="sources-title"><div class="section-title"><span class="step">03</span><div><h2 id="sources-title">Публичные источники</h2><p>Публикации выбранной компании и, отдельно, отраслевые аналоги.</p></div></div><div id="sources-list"></div></section>
+        </section>
+      </div>
+    </main>
+    <footer>Учебный конструктор · работает локально в браузере · никаких запросов к сервисам и аккаунтов</footer>
+  </div>
+</body>
+</html>
