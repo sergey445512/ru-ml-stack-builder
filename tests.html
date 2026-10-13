@@ -1,52 +1,68 @@
 <!doctype html>
 <html lang="ru"><meta charset="utf-8"><title>Проверки конструктора</title>
 <body><h1>Проверки конструктора</h1><pre id="result">Запуск…</pre>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script><script src="catalog.js?v=4"></script><script src="engine.js?v=4"></script>
 <script>
-const errors = [];
-function check(condition, message) { if (!condition) errors.push(message); }
-check(INDUSTRIES.length === 8, 'Должны быть восемь направлений');
-check(INDUSTRIES.reduce((n, item) => n + item.companies.length, 0) === 23, 'Должны быть 23 компании');
-for (const industry of INDUSTRIES) {
-  for (const [companyId] of industry.companies) {
-    const result = buildStack(industry.id, companyId);
-    check(result.company[0] === companyId, `Неверная компания: ${companyId}`);
-    check(result.items.length === 20, `Неполный стек: ${companyId}`);
-    check(result.items.some(item => item.tech === 'MLflow'), `Нет ML: ${companyId}`);
-    for (const item of result.items) {
-      if (item.status === 'confirmed') check(result.direct && result.sources.includes(item.source), `Ложное подтверждение: ${companyId}/${item.tech}`);
-      if (item.status === 'analog') check(!result.direct && result.sources.includes(item.source), `Ложный аналог: ${companyId}/${item.tech}`);
+const errors=[];
+function check(condition,message){if(!condition)errors.push(message);}
+check(INDUSTRIES.length===8,'8 направлений');
+check(INDUSTRIES.reduce((n,x)=>n+x.companies.length,0)===23,'23 компании');
+for(const industry of INDUSTRIES)for(const [id] of industry.companies){
+  const result=buildStack(industry.id,id);
+  check(result.items.length===20,'20 слоёв: '+id);
+  check(result.items.every(x=>x.tools.length>0&&x.tools.length<=3),'Лишние/пустые инструменты: '+id);
+  for(const item of result.items)for(const tool of item.tools){
+    check(Boolean(STATUS_LABELS[tool.status]),'Статус '+id+'/'+tool.tech);
+    check(!['confirmed','mentioned','trial'].includes(tool.status)||Boolean(SOURCES[tool.source]),'Нет источника '+id+'/'+tool.tech);
+    check(!['proposed','optional'].includes(tool.status)||!tool.source,'Гипотеза с чужим подтверждением '+id);
+  }
+  check(exportText(result).includes(result.profile.note),'Экспорт потерял ограничения '+id);
+}
+const toolsFor=(industry,company,layer)=>buildStack(industry,company).items.find(x=>x.id===layer).tools;
+check(toolsFor('ecommerce','goldapple','sql').some(x=>x.tech==='SQL Server'&&x.source==='goldSql'),'Нет SQL Server Goldapple');
+check(toolsFor('ecommerce','goldapple','sql').some(x=>x.tech==='PostgreSQL'&&x.status==='trial'),'Postgres Trial ошибочно объявлен production');
+check(toolsFor('ecommerce','goldapple','nosql').some(x=>x.tech==='MongoDB'),'Пропала MongoDB');
+check(toolsFor('industrial','nornickel','experiments').some(x=>x.tech==='MLflow'&&x.status==='confirmed'),'Не учтён кейс Норникеля');
+check(toolsFor('finance','ingos','experiments').some(x=>x.tech==='Kolmogorov AI'),'Ингосстраху подставлен общий MLflow');
+check(toolsFor('services','domclick','pipeline').length===2,'Не разделены batch и обучение');
+check(toolsFor('services','tutu','sql').length===2,'Потеряны SQL-базы Туту');
+check(toolsFor('logistics','onlinetrade','distributed')[0].status==='optional','Spark навязывается по масштабу');
+check(buildStack('logistics','onlinetrade').sources.length===0,'Onlinetrade присвоен чужой стек');
+const frame=document.createElement('iframe');
+frame.src='index.html';
+frame.style='position:absolute;left:-5000px;top:0;width:1366px;height:768px;border:0';
+frame.onload=async()=>{
+ try{
+  const doc=frame.contentDocument,win=frame.contentWindow;
+  for(const industry of INDUSTRIES){
+    doc.getElementById('industry').value=industry.id;
+    doc.getElementById('industry').dispatchEvent(new win.Event('change',{bubbles:true}));
+    check(doc.getElementById('company').options.length===industry.companies.length,'Список компаний '+industry.id);
+    for(const [id,name] of industry.companies){
+      doc.getElementById('company').value=id;
+      doc.getElementById('company').dispatchEvent(new win.Event('change',{bubbles:true}));
+      check(doc.querySelectorAll('.stack-card').length===20,'Пустой стек '+id);
+      check(doc.getElementById('summary').textContent.includes(name),'Не обновилась компания '+id);
+      doc.querySelector('.tool-chip').click();
+      check(doc.getElementById('sources-dialog').open,'Детали не открылись '+id);
+      check(doc.getElementById('sources-list').textContent.length>20,'Нет пояснений '+id);
+      doc.getElementById('sources-close').click();
+      check(!doc.getElementById('sources-dialog').open,'Не закрывается диалог '+id);
     }
   }
-}
-check(buildStack('development','samolet').items.some(item => item.tech === 'MLflow' && item.status === 'confirmed'), 'Не подтверждён MLflow Самолёта');
-check(buildStack('services','tutu').items.some(item => item.tech === 'MongoDB' && item.status === 'confirmed'), 'Не показан MongoDB Туту');
-check(buildStack('logistics','onlinetrade').items.some(item => item.status === 'analog'), 'Не обозначен отраслевой аналог');
-
-const frame = document.createElement('iframe');
-frame.src = 'index.html';
-frame.hidden = true;
-frame.onload = () => {
-  try {
-    const doc = frame.contentDocument;
-    const industrySelect = doc.getElementById('industry');
-    const companySelect = doc.getElementById('company');
-    for (const industry of INDUSTRIES) {
-      industrySelect.value = industry.id;
-      industrySelect.dispatchEvent(new Event('change', { bubbles: true }));
-      check(companySelect.options.length === industry.companies.length, `Список компаний: ${industry.id}`);
-      for (const [id, name] of industry.companies) {
-        companySelect.value = id;
-        companySelect.dispatchEvent(new Event('change', { bubbles: true }));
-        check(doc.querySelectorAll('.stack-card').length === 20, `Стек не отображается: ${id}`);
-        check(doc.getElementById('summary').textContent.includes(name), `Компания не выбрана: ${id}`);
-      }
+  for(const [width,height] of [[1366,768],[1440,900],[390,844]]){
+    frame.style.width=width+'px';frame.style.height=height+'px';
+    await new Promise(resolve=>setTimeout(resolve,100));
+    check(doc.documentElement.scrollWidth<=width+1,'Горизонтальная прокрутка '+width);
+    if(width>760){
+      const stack=doc.getElementById('stack');
+      check(stack.scrollHeight<=stack.clientHeight+2,'Стек не влез '+width+'x'+height);
+      check(doc.documentElement.scrollHeight<=height+2,'Страница не влезла '+width+'x'+height);
     }
-  } catch (error) { errors.push(`Ошибка интерфейса: ${error.message}`); }
-  const output = document.getElementById('result');
-  output.dataset.status = errors.length ? 'fail' : 'pass';
-  output.textContent = errors.length ? `FAIL: ${errors.join('; ')}` : 'PASS: 23 компании, переключение и источники';
+  }
+ }catch(error){errors.push(error.stack);}
+ const output=document.getElementById('result');output.dataset.status=errors.length?'fail':'pass';
+ output.textContent=errors.length?'FAIL: '+errors.join('; '):'PASS: 23 компании, источники, статусы, диалоги, 3 размера экрана';
 };
-frame.onerror = () => { const output = document.getElementById('result'); output.dataset.status = 'fail'; output.textContent = 'FAIL: index.html не загрузился'; };
 document.body.append(frame);
 </script></body></html>

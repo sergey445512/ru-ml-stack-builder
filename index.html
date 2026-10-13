@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
   <title>Конструктор Data / ML-стека</title>
-  <link rel="stylesheet" href="styles.css?v=3">
-  <script src="app.js?v=3" defer></script>
+  <link rel="stylesheet" href="styles.css?v=4">
+  <script src="app.js?v=4" defer></script>
+  <script src="catalog.js?v=4" defer></script>
+  <script src="engine.js?v=4" defer></script>
 </head>
 <body>
   <div class="shell">
@@ -23,7 +25,7 @@
         <label for="company">Компания</label>
         <select id="company"></select>
         <p id="company-context" class="company-context"></p>
-        <p class="assumption">Во всех сценариях есть ML-модели.</p>
+        <p class="assumption">ML есть во всех сценариях.<br>Нажми на инструмент — откроются роль и источник.</p>
       </aside>
 
       <section class="results" aria-labelledby="results-title">
@@ -31,7 +33,7 @@
           <div><h2 id="results-title">Примерный стек</h2><p id="summary" class="result-summary"></p></div>
           <div class="actions"><button id="sources-open" class="secondary-button" type="button">Источники</button><button id="copy" class="copy-button" type="button">Скопировать</button></div>
         </div>
-        <div class="legend"><span><i class="status-dot confirmed"></i>Опубликовано</span><span><i class="status-dot analog"></i>Отраслевой кейс</span><span><i class="status-dot proposed"></i>Гипотеза</span><span><i class="status-dot deferred"></i>Не требуется</span></div>
+        <div class="legend"><span><i class="status-dot confirmed"></i>Кейс</span><span><i class="status-dot mentioned"></i>Упоминание / Trial</span><span><i class="status-dot proposed"></i>Предположение</span><span><i class="status-dot optional"></i>По задаче</span></div>
         <div id="stack" class="stack" aria-live="polite"></div>
       </section>
     </main>
