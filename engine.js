@@ -7,12 +7,12 @@ function buildStack(industryId, companyId) {
   const industrial = industry.id === 'industrial';
   const defaults = {
     sql:[h('PostgreSQL','Учебный выбор SQL-БД. Наличие этой СУБД у компании не установлено.')],
-    nosql:[o('Не добавляем','Нет подтверждённого дополнительного источника, требующего отдельной технологии.')],
+    nosql:[o('MongoDB','Возможный документный источник для изменчивых карточек и текстов; отдельная БД не обязательна, если хватает SQL/S3.')],
     dwh:[h(industrial || industry.id === 'finance' ? 'Greenplum' : 'ClickHouse','Предполагаемая аналитическая БД для выборок и витрин; реальное DWH нужно уточнить.')],
     storage:[h(industrial || industry.id === 'development' ? 'MinIO (S3)' : 'S3','Хранить версии обучающих данных и модели; это пример архитектуры.')],
     prep:[h('JupyterLab','Среда исследования данных.'),h('pandas / SQL','Подготовка табличных выборок.')],
     train:[h('CatBoost','Baseline для табличной задачи; не утверждение о моделях компании.')],
-    features:[h('SQL-витрины','Общий код расчёта признаков для обучения и batch-скоринга.')],
+    features:[h('SQL-витрины','Общий код расчёта признаков для обучения и batch-скоринга.'),o('Feast','Если нескольким моделям нужны согласованные исторические и онлайн-признаки.')],
     distributed:[o('Spark / PySpark','Добавить, если выборки или расчёты уже не помещаются на одной машине.')],
     pipeline:[h('Airflow','Загрузка данных, переобучение и batch-скоринг по расписанию.')],
     experiments:[h('MLflow','Пример средства учёта экспериментов и версий моделей.')],
@@ -25,20 +25,22 @@ function buildStack(industryId, companyId) {
     monitor:[h('Prometheus'),h('Grafana')],
     quality:[h('Метрики по меткам','Проверки качества и срезов после получения истинных ответов.'),o('Evidently','Если нужны готовые отчёты по данным и дрейфу.')],
     bi:[o('Superset','Если бизнесу нужны интерактивные отчёты поверх витрин.')],
-    vector:[o(industry.defaults.vector ? 'Qdrant' : 'Не добавляем','Векторный поиск нужен только для отдельной задачи с эмбеддингами.')]
+    vector:[o('Qdrant','Возможный инструмент для проекта с эмбеддингами; использование этой компанией не подтверждено. Это не обязательная часть любой ML-системы.')]
   };
-  if (industrial || industry.id === 'ecommerce') defaults.train.push(o('PyTorch','Только если есть нейросетевая задача: изображения, текст или сложное ранжирование.'));
+  defaults.train.push(o('PyTorch','Только если есть нейросетевая задача: изображения, текст или сложное ранжирование.'));
   const items = LAYERS.map(([id,layer,why]) => ({id,layer,why,tools:(profile.tools[id] || defaults[id]).map(tool=>({...tool}))}));
+  const examples = projectExamples(company[0]);
+  for (const item of items) item.example = examples.layers[item.id];
   const containers = items.find(item=>item.id==='containers');
   if (containers.tools.length === 1 && containers.tools[0].tech === 'Docker') containers.tools.push(h('OCI registry','Реестр для версий образов нужен при релизе; конкретный продукт компании не установлен.'));
   const sources = [...new Set(items.flatMap(item=>item.tools.map(tool=>tool.source)).filter(Boolean))];
-  return {industry, company, profile, items, sources};
+  return {industry, company, profile, items, sources, project:examples.project};
 }
 
 function exportText(result) {
   const lines = [`${result.company[1]} · ${result.industry.name}`, 'Примерный стек для ML-инженера. Проверено 13.10.2026.', result.profile.note, 'Опубликовано означает конкретный контур/дату, а не полный стек компании. Вакансии и Trial не доказывают повсеместное использование.', ''];
   for (const item of result.items) {
-    lines.push(`${item.layer}:`, item.why);
+    lines.push(`${item.layer}:`, item.why, `Пример применения (гипотеза): ${item.example}`);
     for (const tool of item.tools) lines.push(`  ${tool.tech} [${STATUS_LABELS[tool.status]}]${tool.note ? ` — ${tool.note}` : ''}${tool.source ? `\n  ${SOURCES[tool.source].title}: ${SOURCES[tool.source].url}\n  ${SOURCES[tool.source].note}` : ''}`);
     lines.push('');
   }
@@ -64,7 +66,7 @@ if (typeof document !== 'undefined' && document.getElementById('industry')) {
   }
   function openDetails(item) {
     $('sources-title').textContent=item.layer;
-    $('sources-context').textContent=`${current.company[1]} · ${item.why}`;
+    $('sources-context').textContent=`${current.company[1]} · ${item.why} Пример применения (гипотеза): ${item.example}`;
     const list=$('sources-list');list.replaceChildren();
     for (const tool of item.tools) {
       const row=document.createElement('div');row.className='tool-detail';
@@ -72,6 +74,13 @@ if (typeof document !== 'undefined' && document.getElementById('industry')) {
       const status=document.createElement('span');status.className=`detail-status ${tool.status}`;status.textContent=STATUS_LABELS[tool.status];
       const note=document.createElement('p');note.textContent=tool.note || (tool.source ? 'Указано в источнике ниже; область применения ограничена описанным проектом.' : 'Учебное предположение; не подтверждено для выбранной компании.');
       row.append(title,status,note);if(tool.source) appendSource(row,tool.source);list.append(row);
+    }
+    const guide = TECH_GUIDES[item.id];
+    if (guide) {
+      const link = document.createElement('a');
+      link.href = guide.url;
+      link.textContent = guide.title + ' (возможности инструмента, не свидетельство о компании)';
+      link.target = '_blank'; link.rel = 'noopener noreferrer'; list.append(link);
     }
     $('sources-dialog').showModal();
   }
@@ -90,7 +99,7 @@ if (typeof document !== 'undefined' && document.getElementById('industry')) {
         const dot=document.createElement('i');dot.className=`status-dot ${tool.status}`;dot.setAttribute('aria-hidden','true');
         button.append(dot,document.createTextNode(tool.tech));button.addEventListener('click',()=>openDetails(item));toolsRow.append(button);
       }
-      const reason=document.createElement('p');reason.className='reason';reason.textContent=item.why;reason.title=item.why;
+      const reason=document.createElement('p');reason.className='reason';reason.textContent='Идея: '+item.example;reason.title='Пример применения, не подтверждение проекта компании: '+item.example;
       card.append(layer,toolsRow,reason);container.append(card);
     }
   }

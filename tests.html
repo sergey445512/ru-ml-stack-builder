@@ -10,6 +10,9 @@ check(INDUSTRIES.reduce((n,x)=>n+x.companies.length,0)===23,'23 компании
 for(const industry of INDUSTRIES)for(const [id] of industry.companies){
   const result=buildStack(industry.id,id);
   check(result.items.length===20,'20 слоёв: '+id);
+  check(Boolean(result.project),'Нет идеи проекта: '+id);
+  check(result.items.every(x=>x.example && x.example.length>30),'Нет примера применения: '+id);
+  check(result.items.every(x=>x.tools.every(t=>t.tech!=='Не добавляем')),'Пустая рекомендация: '+id);
   check(result.items.every(x=>x.tools.length>0&&x.tools.length<=3),'Лишние/пустые инструменты: '+id);
   for(const item of result.items)for(const tool of item.tools){
     check(Boolean(STATUS_LABELS[tool.status]),'Статус '+id+'/'+tool.tech);
@@ -26,6 +29,9 @@ check(toolsFor('industrial','nornickel','experiments').some(x=>x.tech==='MLflow'
 check(toolsFor('finance','ingos','experiments').some(x=>x.tech==='Kolmogorov AI'),'Ингосстраху подставлен общий MLflow');
 check(toolsFor('services','domclick','pipeline').length===2,'Не разделены batch и обучение');
 check(toolsFor('services','tutu','sql').length===2,'Потеряны SQL-базы Туту');
+check(toolsFor('retail','detmir','vector').some(x=>x.tech==='Qdrant'&&x.status==='optional'&&!x.source),'Qdrant для Детского мира должен быть гипотезой');
+check(toolsFor('services','domclick','vector').some(x=>x.tech==='Elasticsearch'&&x.source==='domclick'),'Потерян подтвержденный Elasticsearch');
+check(toolsFor('development','samolet','vector').some(x=>x.tech==='Qdrant'&&x.source==='samolet'),'Потерян подтвержденный Qdrant');
 check(toolsFor('logistics','onlinetrade','distributed')[0].status==='optional','Spark навязывается по масштабу');
 check(buildStack('logistics','onlinetrade').sources.length===0,'Onlinetrade присвоен чужой стек');
 const frame=document.createElement('iframe');
